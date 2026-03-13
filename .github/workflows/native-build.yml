@@ -1,0 +1,61 @@
+#%%
+name: Build Native Images
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        include:
+          - os: ubuntu-latest
+            artifact-name: native-image-linux
+          - os: windows-latest
+            artifact-name: native-image-windows
+          - os: macos-latest
+            artifact-name: native-image-macos
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1.5.0
+        with:
+          version: '21.0.2'
+          java-version: '21'
+          components: 'native-image'
+
+      - name: Make Maven wrapper executable
+        if: runner.os != 'Windows'
+        run: chmod +x ./mvnw
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build native image (Unix)
+        if: runner.os != 'Windows'
+        run: ./mvnw clean -Pnative native:compile
+
+      - name: Build native image (Windows)
+        if: runner.os == 'Windows'
+        run: mvnw.cmd clean -Pnative native:compile
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: |
+            target/*
+            !target/*.jar
+          retention-days: 30
