@@ -50,12 +50,3 @@ jobs:
       - name: Build native image (Windows)
         if: runner.os == 'Windows'
         run: mvnw.cmd clean -Pnative native:compile
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.artifact-name }}
-          path: |
-            target/*
-            !target/*.jar
-          retention-days: 30
