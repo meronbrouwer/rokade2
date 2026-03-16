@@ -42,7 +42,7 @@ jobs:
 
       - name: Build native image (Unix)
         if: runner.os != 'Windows'
-        run: ./mvn clean package
+        run: mvn clean package
 
       - name: Build native image (Windows)
         if: runner.os == 'Windows'
