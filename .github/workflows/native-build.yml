@@ -29,9 +29,9 @@ jobs:
         uses: graalvm/setup-graalvm@v1.5.0
         with:
           java-version: '25'
-      - name: Make Maven wrapper executable
-        if: runner.os != 'Windows'
-        run: chmod +x ./mvnw
+#      - name: Make Maven wrapper executable
+#        if: runner.os != 'Windows'
+#        run: chmod +x ./mvnw
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -42,8 +42,8 @@ jobs:
 
       - name: Build native image (Unix)
         if: runner.os != 'Windows'
-        run: ./mvnw clean package
+        run: ./mvn clean package
 
       - name: Build native image (Windows)
         if: runner.os == 'Windows'
-        run: mvnw.cmd clean package
+        run: mvn.cmd clean package
