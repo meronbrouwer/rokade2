@@ -25,13 +25,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up GraalVM
-        uses: graalvm/setup-graalvm@v1.5.0
-        with:
-          java-version: '25'
-#      - name: Make Maven wrapper executable
-#        if: runner.os != 'Windows'
-#        run: chmod +x ./mvnw
+      - name: Setup Gluon's GraalVM
+        uses: gluonhq/setup-graalvm@master
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -42,8 +37,8 @@ jobs:
 
       - name: Build native image (Unix)
         if: runner.os != 'Windows'
-        run: mvn clean package
+        run: mvn gluonfx:build
 
       - name: Build native image (Windows)
         if: runner.os == 'Windows'
-        run: mvn.cmd clean package
+        run: mvn.cmd gluonfx:build
